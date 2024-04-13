@@ -1,0 +1,1 @@
+# Recognition_of_handwritten_AI_WRITERS
