@@ -1,1 +1,1 @@
-# Recognition_of_handwritten_AI_WRITERS
+Все, кто видит это сообщение, лучшие!!!
