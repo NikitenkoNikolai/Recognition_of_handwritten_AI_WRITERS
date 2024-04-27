@@ -11,6 +11,9 @@ class Model:
         self.input = None
         self.output = None
 
+    def load_weights(self, path):
+        self.model.load_weights(path)
+
     def build(self):
         self.model = keras.models.Model(
             inputs=self.input, outputs=self.output)
