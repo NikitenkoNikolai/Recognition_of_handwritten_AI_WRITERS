@@ -1,6 +1,6 @@
 import Levenshtein
 
-class Cer:
+class CER:
 
     @staticmethod
     def cer(predicted: str, target: str) -> float:
@@ -19,5 +19,5 @@ class Cer:
 test1 = 'Arsenal is the best club in the world'
 test2 = 'ManUnited is the best club in the world'
 
-dif = Cer.cer(test1, test2)
+dif = CER.cer(test1, test2)
 print(dif)
