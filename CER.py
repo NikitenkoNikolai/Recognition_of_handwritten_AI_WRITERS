@@ -5,7 +5,7 @@ class Cer:
     @staticmethod
     def cer(predicted: str, target: str) -> float:
         """
-        Вычислияет CER(Character Error Rate) между двумя строками.
+        Вычислияет CER (Character Error Rate) между двумя строками.
 
         predicted: Предсказанная строка.
         target: Ожидаемая строка.
