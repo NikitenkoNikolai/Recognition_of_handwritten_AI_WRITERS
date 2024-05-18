@@ -8,7 +8,7 @@ class CER:
         Вычислияет CER (Character Error Rate) между двумя строками.
 
         predicted: Предсказанная строка.
-        target: Ожидаемая строка.
+        target: Целевая строка.
         return: CER
         
         """
