@@ -3,13 +3,13 @@ import Levenshtein
 class Cer:
 
     @staticmethod
-    def cer(predicted: str, target: str):
+    def cer(predicted: str, target: str) -> float:
         """
         Вычислияет CER(Character Error Rate) между двумя строками.
 
-        :param predicted: str
-        :param target: str
-        :return: float
+        predicted: Предсказанная строка.
+        target: Ожидаемая строка.
+        return: CER
         """
 
         different = Levenshtein.distance(predicted, target)
