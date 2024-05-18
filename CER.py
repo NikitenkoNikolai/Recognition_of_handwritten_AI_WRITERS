@@ -16,8 +16,8 @@ class CER:
         different = Levenshtein.distance(predicted, target)
         return different / len(predicted)
 
-predicted = 'Arsenal is the best club in the world'
-target = 'ManUnited is the best club in the world'
+predicted = 'Vive l’empereur Bonaparte!'
+target = 'Vive l’empereur Alexander!'
 
 dif = CER.cer(predicted, target)
 print(dif)
