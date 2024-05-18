@@ -10,6 +10,7 @@ class Cer:
         predicted: Предсказанная строка.
         target: Ожидаемая строка.
         return: CER
+        
         """
 
         different = Levenshtein.distance(predicted, target)
