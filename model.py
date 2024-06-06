@@ -69,6 +69,11 @@ class Model:
         name="Conv4",
     )(self.x)
 
+    def RNN(self):
+        self.x = layers.Bidirectional(layers.LSTM(128, return_sequences=True))(self.x)
+        self.x = layers.Bidirectional(layers.LSTM(64, return_sequences=True))(self.x)
+
+
     new_shape = ((self.shape[0] // 8), (self.shape[1] // 8) * 256)
     self.x = layers.Reshape(target_shape=new_shape, name="reshape")(self.x)
     self.x = layers.Dense(64, activation="relu", name="dense1")(self.x)
