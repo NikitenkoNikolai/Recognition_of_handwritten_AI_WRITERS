@@ -5,13 +5,12 @@ from telebot import types
 
 dir = r'C:/Users/huaweii/PycharmProjects/pythonProject/'
 
-class Bot:
+class ManuscriptBot:
 
     CHECK_START = False
     BOT_TOKEN = '7000226866:AAG0YNBBOV0i4xI4hKhLrjLSgWGuHaYglEU'
     bot = telebot.TeleBot(BOT_TOKEN)
-
-    @staticmethod
+    
     @bot.message_handler(content_types=['photo'])
     def print_text_from_photo(message):
         if Bot.CHECK_START:
@@ -24,6 +23,7 @@ class Bot:
             with open(src, 'wb') as new_file:
                 new_file.write(downloaded_file)
 
+            # тессеракт введён в качестве теста
             text = pytesseract.image_to_string(src, lang='rus')
 
             Bot.bot.send_message(chat_id, f'Мне кажется, на этом изображении написано: {text}')
