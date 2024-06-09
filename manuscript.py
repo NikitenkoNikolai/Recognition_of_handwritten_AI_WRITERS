@@ -5,7 +5,7 @@ from telebot import types
 
 dir = r'C:/Users/huaweii/PycharmProjects/pythonProject/'
 
-class ManuscriptBot:
+class Bot:
 
     CHECK_START = False
     BOT_TOKEN = '7000226866:AAG0YNBBOV0i4xI4hKhLrjLSgWGuHaYglEU'
