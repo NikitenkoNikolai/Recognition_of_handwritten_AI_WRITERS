@@ -1,8 +1,10 @@
 import telebot
+from telebot import types
 import pytesseract
 import os
-from telebot import types
 import time
+from translate import Translator
+from langid import classify
 
 dir = r'C:/Users/huaweii/PycharmProjects/pythonProject/'
 
@@ -68,7 +70,7 @@ class Bot:
             Bot.get_test_image(callback.message)
         elif callback.data == 'translate':
             text = Bot.text_difinition(message_img, True)
-            Bot.bot.send_message(chat_id, 'Тупой технарь ещё не успел это реализовать')
+            Bot.bot.send_message(chat_id, text)
             time.sleep(0.35)
             Bot.bot.delete_message(chat_id, callback.message.message_id)
         elif callback.data == 'continue':
@@ -76,10 +78,6 @@ class Bot:
             Bot.bot.send_message(chat_id, fr'{message_list[1]} <b>{text}</b>', parse_mode='html')
             time.sleep(0.35)
             Bot.bot.delete_message(chat_id, callback.message.message_id)
-
-    @bot.message_handler(commands=['help'])
-    def help_message(message):
-        Bot.bot.send_message(message.chat.id, 'Когда будем смотреть фильм ужасов?')
 
     @bot.message_handler(commands=['test_image'])
     def get_test_image(message):
@@ -94,7 +92,7 @@ class Bot:
         img_path = Bot.bot.get_file(message.photo[-1].file_id)
         downloaded_file = Bot.bot.download_file(img_path.file_path)
 
-        src = dir + img_path.file_path.split('/')[-1]
+        src = img_path.file_path.split('/')[-1]
         with open(src, 'wb') as new_file:
             new_file.write(downloaded_file)
 
@@ -102,8 +100,14 @@ class Bot:
         os.remove(src)
 
         if translate:
-            pass
-
+            if classify(text)[0] == 'ru':
+                translator = Translator(from_lang='ru', to_lang='en')
+                text = translator.translate(text)
+            elif classify(text)[0] == 'en':
+                translator = Translator(from_lang='en', to_lang='ru')
+                text = translator.translate(text)
+            else:
+                text = 'Не поддерживаемый язык для перевода.'
         return text
 
     @staticmethod
