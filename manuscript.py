@@ -22,7 +22,6 @@ with open('start.txt', encoding='utf-8') as file:
     # 11: Сообщение об успешном распознавании текста
     message_list = file.read().split('\n\n\n')
 
-
 class Bot:
 
     CHECK_START = False
