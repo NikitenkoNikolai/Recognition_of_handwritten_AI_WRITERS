@@ -68,7 +68,7 @@ class Bot:
         elif callback.data == 'get_img':
             Bot.get_test_image(callback.message)
         elif callback.data == 'translate':
-            text = Bot.text_difinition(callback.message, True)
+            text = Bot.text_difinition(message_img, True)
             Bot.bot.send_message(chat_id, 'Тупой технарь ещё не успел это реализовать')
             time.sleep(0.35)
             Bot.bot.delete_message(chat_id, callback.message.message_id)
