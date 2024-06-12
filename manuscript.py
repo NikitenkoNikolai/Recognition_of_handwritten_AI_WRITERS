@@ -5,24 +5,7 @@ import os
 import time
 from translate import Translator
 from langid import classify
-
-dir = r'C:/Users/huaweii/PycharmProjects/pythonProject/'
-
-# набор фраз для ответа на сообщение
-with open('start.txt', encoding='utf-8') as file:
-    # 0: Приветствие;
-    # 1: Опознавательный текст;
-    # 2: Сообщение о незапущенном боте;
-    # 3: Кнопка получения результата;
-    # 4: Кнопка тестового изображения;
-    # 5: Ответ на распознавание текста;
-    # 6: Сообщение ожидания;
-    # 7: Сообщение о некорректном сообщении.
-    # 8: Стартовое сообщение
-    # 9: Кнопка старта
-    # 10: Кнопка перевода языка
-    # 11: Сообщение об успешном распознавании текста
-    message_list = file.read().split('\n\n\n')
+from helpful import message_list
 
 class Bot:
 
@@ -48,7 +31,6 @@ class Bot:
         else:
             Bot.bot.send_message(chat_id, message_list[2])
 
-
     @bot.message_handler(commands=['start'])
     def start_message(message):
         chat_id = message.chat.id
@@ -63,21 +45,14 @@ class Bot:
 
     @bot.callback_query_handler(func=lambda callback: True)
     def print_steps(callback):
-        chat_id = callback.message.chat.id
-        if callback.data == 'start':
-            Bot.next_step(callback.message)
-        elif callback.data == 'get_img':
-            Bot.get_test_image(callback.message)
-        elif callback.data == 'translate':
-            text = Bot.text_difinition(message_img, True)
-            Bot.bot.send_message(chat_id, text)
-            time.sleep(0.35)
-            Bot.bot.delete_message(chat_id, callback.message.message_id)
-        elif callback.data == 'continue':
-            text = Bot.text_difinition(message_img)
-            Bot.bot.send_message(chat_id, fr'{message_list[1]} <b>{text}</b>', parse_mode='html')
-            time.sleep(0.35)
-            Bot.bot.delete_message(chat_id, callback.message.message_id)
+        the_dict = {
+            'start': Bot.next_step,
+            'get_img': Bot.get_test_image,
+            'translate': Bot.print_text(True),
+            'continue': Bot.print_text()
+                    }
+
+        the_dict[callback.data](callback.message)
 
     @bot.message_handler(commands=['test_image'])
     def get_test_image(message):
@@ -97,6 +72,7 @@ class Bot:
             new_file.write(downloaded_file)
 
         text = pytesseract.image_to_string(src, lang='rus')
+        text = ''.join(el for el in text if el not in '<>')
         os.remove(src)
 
         if translate:
@@ -109,6 +85,16 @@ class Bot:
             else:
                 text = 'Не поддерживаемый язык для перевода.'
         return text
+
+    @staticmethod
+    def print_text(translate=False):
+        def func(message):
+            chat_id = message.chat.id
+            text = Bot.text_difinition(message_img, translate)
+            Bot.bot.send_message(chat_id, f'{message_list[1]}\n\n<blockquote>{text}</blockquote>', parse_mode='html')
+            time.sleep(0.35)
+            Bot.bot.delete_message(chat_id, message.message_id)
+        return func
 
     @staticmethod
     def next_step(message):
