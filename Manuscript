@@ -1,0 +1,70 @@
+import numpy as np
+from tensorflow.keras.models import load_model
+import cv2
+import numpy as np
+from PIL import Image, ImageFilter, ImageEnhance
+import os
+from Preprocess_And_Segmentation import TextSegmenter, ImagePreprocessor
+
+model_name = load_model('russian.h5')
+
+
+class Manuscript:
+    def __init__(self, image, folder, model):
+        self.image = image
+        self.folder = folder
+        self.class_names = [*'АБВГДЕЁЖЗИЙКЛМНОӨПРСТУҮФХЦЧШЩЪЫЬЭЮЯ']
+        self.model = model
+
+    def preprocess_image(self, img_path):
+        img = Image.open(img_path).convert('L')
+        img = img.resize((28, 28))
+        img = np.array(img)
+
+        img = 255 - img
+
+        img = img.reshape((28, 28, 1)).astype('float32') / 255.0
+        return img
+
+    def predict(self, img_path=None):
+        if img_path:
+            img = self.preprocess_image(img_path)
+            img = np.expand_dims(img, axis=0)
+            prediction = self.model.predict(img)[0]
+        else:
+            raise ValueError("img_path должен быть предоставлен для предсказания.")
+
+        predicted_class = np.argmax(prediction)
+        predicted_letter = self.class_names[predicted_class]
+
+        return predicted_letter
+
+    def predict_images_in_folder(self):
+        predictions = []
+
+        filenames = [f for f in os.listdir(self.folder) if f.split('.')[0].isdigit()]
+        filenames = sorted(filenames, key=lambda x: int(os.path.splitext(x)[0]))
+
+        for filename in filenames:
+            if filename.endswith(('.png', '.jpg', '.jpeg', '.bmp')):
+                img_path = os.path.join(self.folder, filename)
+                predicted_letter = self.predict(img_path=img_path)
+                predictions.append(predicted_letter)
+
+        return ''.join(predictions)
+
+    def process_and_predict(self):
+        original_image, preprocessed_image = ImagePreprocessor.preprocess_image(self.image)
+
+        letters = TextSegmenter.text_segmentation(original_image, preprocessed_image)
+
+        if not os.path.exists(self.folder):
+            os.makedirs(self.folder)
+
+        for idx, (_, _, letter_img) in enumerate(letters):
+            letter_path = os.path.join(self.folder, f"{idx}.png")
+            cv2.imwrite(letter_path, letter_img)
+
+        predicted_string = self.predict_images_in_folder()
+
+        return predicted_string
