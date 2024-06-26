@@ -1,11 +1,10 @@
 import telebot
 from telebot import types
-import pytesseract
+from string import ascii_uppercase as up
 import os
+import shutil
 import time
 from translate import Translator
-from langid import classify
-from helpful import message_list
 
 class Bot:
 
@@ -57,7 +56,7 @@ class Bot:
     @bot.message_handler(commands=['test_image'])
     def get_test_image(message):
         chat_id = message.chat.id
-        with open('test_image.jpg', 'rb') as image_file:
+        with open('/content/drive/MyDrive/manuscript_bot/test_image.jpg', 'rb') as image_file:
             img = image_file.read()
         time.sleep(0.5)
         Bot.bot.send_document(chat_id, img, reply_to_message_id=message.message_id, visible_file_name='test_image.jpg')
@@ -67,19 +66,22 @@ class Bot:
         img_path = Bot.bot.get_file(message.photo[-1].file_id)
         downloaded_file = Bot.bot.download_file(img_path.file_path)
 
-        src = img_path.file_path.split('/')[-1]
+        src = '/content/drive/MyDrive/manuscript_bot/' + img_path.file_path.split('/')[-1]
         with open(src, 'wb') as new_file:
             new_file.write(downloaded_file)
 
-        text = pytesseract.image_to_string(src, lang='rus')
-        text = ''.join(el for el in text if el not in '<>')
+        module = Manuscript(src, '/content/drive/MyDrive/manuscript_bot/word', model_name)
+        text = module.process_and_predict()
+
         os.remove(src)
+        shutil.rmtree('/content/drive/MyDrive/manuscript_bot/word')
+        
 
         if translate:
-            if classify(text)[0] == 'ru':
+            if text[0] in [chr(i) for i in range(ord('А'), ord('Я') + 1)]:
                 translator = Translator(from_lang='ru', to_lang='en')
                 text = translator.translate(text)
-            elif classify(text)[0] == 'en':
+            elif text[0] in up:
                 translator = Translator(from_lang='en', to_lang='ru')
                 text = translator.translate(text)
             else:
