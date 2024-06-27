@@ -2,6 +2,7 @@ import telebot
 from telebot import types
 import time
 import shutil
+import os
 from translate import Translator
 
 class Bot:
